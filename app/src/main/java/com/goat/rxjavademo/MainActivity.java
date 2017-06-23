@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -29,23 +30,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     //简单使用
     private void simple() {
         //创建 Observer(观察者)
-        Observer<String>  observer=new Observer<String>() {
+        Observer<String> observer = new Observer<String>() {
             @Override
             public void onSubscribe(Disposable d) {
-                Log.d(TAG,"Subscribe");
+                Log.d(TAG, "Subscribe");
             }
 
             @Override
             public void onNext(String value) {
-                Log.d(TAG,"value="+value);
+                Log.d(TAG, "value=" + value);
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG,"Error");
+                Log.d(TAG, "Error");
             }
 
             @Override
@@ -53,13 +55,13 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Completed!");
             }
         };
-    //创建 Observable(被观察者)
-        Observable<String> observable=Observable.create(new ObservableOnSubscribe<String>() {
+        //创建 Observable(被观察者)
+        Observable<String> observable = Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> e) throws Exception {
-                            e.onNext("hellow");
-                            e.onNext("world");
-                            e.onComplete();
+                e.onNext("hellow");
+                e.onNext("world");
+                e.onComplete();
             }
         });
         observable.subscribe(observer);
@@ -67,12 +69,12 @@ public class MainActivity extends AppCompatActivity {
 
     //简化版
     public void simplify(View view) {
-    Observable.just("hellow","world").subscribe(new Consumer<String>() {
-    @Override
-    public void accept(String s) throws Exception {
-        Log.d(TAG, "s="+s);
-    }
-    });
+        Observable.just("hellow", "world").subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, "s=" + s);
+            }
+        });
     }
 
     // 线程控制
@@ -80,17 +82,18 @@ public class MainActivity extends AppCompatActivity {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> e) throws Exception {
-                Log.d(TAG,"ThreadName="+Thread.currentThread().getName());
+                Log.d(TAG, "ThreadName=" + Thread.currentThread().getName());
                 e.onNext("hellow");
                 e.onComplete();
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                Log.d(TAG,"ThreadName="+Thread.currentThread().getName());
+                Log.d(TAG, "ThreadName=" + Thread.currentThread().getName());
             }
         });
     }
+
     // 变换map使用
     public void map(View view) {
         Observable.create(new ObservableOnSubscribe<String>() {
@@ -107,14 +110,15 @@ public class MainActivity extends AppCompatActivity {
         }).subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer integer) throws Exception {
-            Log.d(TAG,"integer="+integer);
+                Log.d(TAG, "integer=" + integer);
             }
         });
     }
 
+
     // 变换的原理：lift()
     public void lift(View view) {
-        Observable.just("hello","word").lift(new ObservableOperator<Integer, String>() {
+        Observable.just("hello", "word").lift(new ObservableOperator<Integer, String>() {
             @Override
             public Observer<? super String> apply(final Observer<? super Integer> observer) throws Exception {
                 return new Observer<String>() {
@@ -143,11 +147,38 @@ public class MainActivity extends AppCompatActivity {
         }).subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer integer) throws Exception {
-                Log.d(TAG,"执行完成");
-                Log.d(TAG,"integer="+integer);
+                Log.d(TAG, "执行完成");
+                Log.d(TAG, "integer=" + integer);
             }
         });
     }
 
+    //多次切换
+    public void moreLift(View view) {
+        Observable.just(7)// IO 线程，由 subscribeOn() 指定
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.newThread())
+                .map(new Function<Integer, String>() {// 新线程，由 observeOn() 指定
+                    @Override
+                    public String apply(Integer integer) throws Exception {
+                        Log.d(TAG, "Thread1=" + Thread.currentThread().getName());
+                        return "item" + integer;
+                    }
+                }).observeOn(Schedulers.io())
+                .map(new Function<String, Integer>() {// IO 线程，由 observeOn() 指定
+                    @Override
+                    public Integer apply(String s) throws Exception {
+                        Log.d(TAG, "Thread2=" + Thread.currentThread().getName());
+                        return s.hashCode();
+                    }
+                }).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Integer>() { // Android 主线程，由 observeOn() 指定
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        Log.d(TAG, "Thread3=" + Thread.currentThread().getName());
+                        Log.d(TAG, "integer=" + integer);
+                    }
+                });
 
+    }
 }

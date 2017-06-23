@@ -41,11 +41,17 @@ lift(ObservableOperator)
        
 这样就实现了 lift() 过程，有点**像一种代理机制，通过事件拦截和处理实现事件序列的变换。**  
 ![](http://i.imgur.com/uBIMPFA.png)   
+3.多切换与线程控制  
+
+因为 observeOn() 指定的是 Observer 的线程，而这个 Observer 并不是（严格说应该为『不一定是』，但这里不妨理解为『不是』）subscribe() 参数中的 Observer ，而是 observeOn() 执行时的当前 Observable 所对应的 Observer ，即它的直接下级 Observer 。换句话说，observeOn() 指定的是它之后的操作所在的线程。因此如果有多次切换线程的需求，只要在每个想要切换线程的位置调用一次 observeOn() 即可。  
+**示例图**    
+![](http://ww1.sinaimg.cn/mw1024/52eb2279jw1f2rxd1vl7xj20hd0hzq6e.jpg)
 
 ## Rx拓展
 ReactiveX 不且有Rxjava，还有RxJs、RxSwift、RxKotlin、RxPHP等，基本原理与Rxjava基本一致。  
-[https://github.com/ReactiveX](https://github.com/ReactiveX)
-
+[https://github.com/ReactiveX](https://github.com/ReactiveX)   
+RxJS官方文档中文翻译  
+[https://buctwbzs.gitbooks.io/rxjs/content/observable.html](https://buctwbzs.gitbooks.io/rxjs/content/observable.html)
 
 
 

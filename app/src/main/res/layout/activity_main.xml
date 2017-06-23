@@ -12,27 +12,39 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="简单使用"/>
+
     <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:onClick="simplify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="简化"/>
+
     <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:onClick="scheduler"
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="线程控制"/>
+
     <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:onClick="map"
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="变换map"/>
+
     <Button
-        android:onClick="lift"
-        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:onClick="lift"
         android:text="变换的原理"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:onClick="moreLift"
+        android:text="多次lift"/>
 </LinearLayout>
